@@ -1,0 +1,27 @@
+{
+  "name": "lichess-api-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "start": "node dist/main.js",
+    "dev": "nodemon",
+    "clean": "rimraf dist"
+  },
+  "keywords": [],
+  "author": "Roman Auriti",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "@types/pg": "^8.11.10",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "kafkajs": "^2.2.4",
+    "nats": "^2.28.2",
+    "pg": "^8.13.0"
+  }
+}
