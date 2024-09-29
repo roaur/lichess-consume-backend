@@ -1,5 +1,6 @@
 // src/main.ts
 
+import './server';
 import { streamChannel } from './lichessStream';
 import { channels } from './channels';
 import { config } from 'dotenv';

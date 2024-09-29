@@ -21,22 +21,22 @@ export class Persistence {
     const usePostgres = process.env.USE_POSTGRES === 'true';
     const useNATS = process.env.USE_NATS === 'true'; // Read USE_NATS
 
-    if (useKafka) {
-      sinks.push(new KafkaSink(this.channel));
-    }
+    // if (useKafka) {
+    //   sinks.push(new KafkaSink(this.channel));
+    // }
 
-    if (usePostgres) {
-      sinks.push(new PostgresSink());
-    }
+    // if (usePostgres) {
+    //   sinks.push(new PostgresSink());
+    // }
 
-    if (useNATS) {
-      sinks.push(new NATSSink(this.channel));
-    }
+    // if (useNATS) {
+    //   sinks.push(new NATSSink(this.channel));
+    // }
 
     // If no sinks are enabled, use ConsoleSink
-    if (sinks.length === 0) {
-      sinks.push(new ConsoleSink(this.channel));
-    }
+    // if (sinks.length === 0) {
+    sinks.push(new ConsoleSink(this.channel));
+    // }
 
     this.sinkManager = new SinkManager(sinks);
   }

@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # PostgreSQL service
+  lichess_node_postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: your_db_user
+      POSTGRES_PASSWORD: your_db_password
+      POSTGRES_DB: your_database
+    volumes:
+      - ./postgres/resources/:/docker-entrypoint-initdb.d/
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+  # Zookeeper service (for Kafka)
+  zookeeper:
+    image: zookeeper:3.7.2
+    ports:
+      - "2181:2181"
+    networks:
+      - backend
+
+  # Kafka service
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "lichess-blitz:1:1,lichess-classical:1:1"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+    networks:
+      - backend
+
+  # NATS service
+  nats:
+    image: nats:2.7-alpine
+    ports:
+      - "4222:4222"
+    networks:
+      - backend
+
+  # Node.js application service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      # PostgreSQL environment variables
+      USE_POSTGRES: 'true'
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: your_db_user
+      DB_PASSWORD: your_db_password
+      DB_DATABASE: your_database
+
+      # Kafka environment variables
+      USE_KAFKA: 'true'
+      KAFKA_BROKERS: kafka:9092
+
+      # NATS environment variables
+      USE_NATS: 'true'
+      NATS_URL: nats://nats:4222
+
+      # Other environment variables
+      NODE_ENV: production
+    depends_on:
+      - postgres
+      - kafka
+      - nats
+    networks:
+      - backend
+
+volumes:
+  pgdata:
+
+networks:
+  backend:
+    driver: bridge
